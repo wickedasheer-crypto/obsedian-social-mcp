@@ -11,14 +11,14 @@ def create_linkedin_post(text: str) -> dict:
         access_token = os.getenv("LINKEDIN_ACCESS_TOKEN")
         if not access_token:
                     return {"error": "LINKEDIN_ACCESS_TOKEN not set"}
-                headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json", "X-Restli-Protocol-Version": "2.0.0"}
-    me = requests.get("https://api.linkedin.com/v2/me", headers=headers, timeout=10)
-    author = f"urn:li:person:{me.json().get('id', '')}" if me.status_code == 200 else ""
-    if not author:
-                return {"error": "Cannot resolve profile"}
-            payload = {"author": author, "lifecycleState": "PUBLISHED", "specificContent": {"com.linkedin.ugc.ShareContent": {"shareCommentary": {"text": text}, "shareMediaCategory": "NONE"}}, "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}}
-    r = requests.post("https://api.linkedin.com/v2/ugcPosts", headers=headers, json=payload, timeout=15)
-    return {"status": "success", "preview": text[:200]} if r.status_code in (200,201) else {"error": r.text[:300]}
+        headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json", "X-Restli-Protocol-Version": "2.0.0"}
+        me = requests.get("https://api.linkedin.com/v2/me", headers=headers, timeout=10)
+             author = f"urn:li:person:{me.json().get('id', '')}" if me.status_code == 200 else ""
+            if not author:
+                    return {"error": "Cannot resolve profile"}
+                payload = {"author": author, "lifecycleState": "PUBLISHED", "specificContent": {"com.linkedin.ugc.ShareContent": {"shareCommentary": {"text": text}, "shareMediaCategory": "NONE"}}, "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}}
+        r = requests.post("https://api.linkedin.com/v2/ugcPosts", headers=headers, json=payload, timeout=15)
+        return {"status": "success", "preview": text[:200]} if r.status_code in (200,201) else {"error": r.text[:300]}
 
 @mcp.tool()
 def generate_posts(num: int = 3) -> list:
